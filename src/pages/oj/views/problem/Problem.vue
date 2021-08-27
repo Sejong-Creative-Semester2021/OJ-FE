@@ -34,10 +34,10 @@
             </div>
           </div>
 
-          <div v-if="problem.hint">
-            <p class="title">{{$t('m.Hint')}}</p>
+          <div v-if="problem.testhint">
+            <p class="title">{{$t('testhint')}}</p>
             <Card dis-hover>
-              <div class="content" v-html=problem.hint></div>
+              <div class="content" v-html=problem.testhint></div>
             </Card>
           </div>
 
@@ -240,7 +240,7 @@
         problem: {
           title: '',
           description: '',
-          hint: '',
+          testhint: '',
           my_status: '',
           template: {},
           languages: [],

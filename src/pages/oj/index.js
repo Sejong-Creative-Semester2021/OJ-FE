@@ -32,7 +32,11 @@ import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/toolbox'
 import 'echarts/lib/component/markPoint'
 
-// register global utility filters.
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import '@/styles/app.scss'
+
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
@@ -42,6 +46,8 @@ Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)
 })
 
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
 Vue.use(VueClipboard)
 Vue.use(highlight)
 Vue.use(katex)

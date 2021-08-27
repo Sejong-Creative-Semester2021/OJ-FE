@@ -1,26 +1,21 @@
 <template>
   <div id="header">
     <Menu theme="light" mode="horizontal" @on-select="handleRoute" :active-name="activeMenu" class="oj-menu">
-      <div class="logo"><span>{{website.website_name}}</span></div>
+      <div class="logo"><span>{{'OJ'}}</span></div>
       <Menu-item name="/">
-        <Icon type="home"></Icon>
         {{$t('m.Home')}}
       </Menu-item>
       <Menu-item name="/problem">
-        <Icon type="ios-keypad"></Icon>
         {{$t('m.NavProblems')}}
       </Menu-item>
       <Menu-item name="/contest">
-        <Icon type="trophy"></Icon>
         {{$t('m.Contests')}}
       </Menu-item>
       <Menu-item name="/status">
-        <Icon type="ios-pulse-strong"></Icon>
         {{$t('m.NavStatus')}}
       </Menu-item>
       <Submenu name="rank">
         <template slot="title">
-          <Icon type="podium"></Icon>
           {{$t('m.Rank')}}
         </template>
         <Menu-item name="/acm-rank">
@@ -32,7 +27,6 @@
       </Submenu>
       <Submenu name="about">
         <template slot="title">
-          <Icon type="information-circled"></Icon>
           {{$t('m.About')}}
         </template>
         <Menu-item name="/about">
@@ -136,10 +130,10 @@
     height: auto;
     width: 100%;
     z-index: 1000;
-    background-color: #fff;
-    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+    background-color: transparent;
+
     .oj-menu {
-      background: #fdfdfd;
+      background: transparent;
     }
 
     .logo {

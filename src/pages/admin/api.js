@@ -243,6 +243,36 @@ export default {
       params
     })
   },
+  createAIProblem (data) {
+    return ajax('admin/aicontest', 'post', {
+      data
+    })
+  },
+  editAIProblem (data) {
+    return ajax('admin/aicontest', 'put', {
+      data
+    })
+  },
+  deleteAIProblem (id) {
+    return ajax('admin/aicontest', 'delete', {
+      params: {
+        id
+      }
+    })
+  },
+  getAIProblem (id) {
+    return ajax('admin/aicontest', 'get', {
+      params: {
+        id
+      }
+    })
+  },
+  getAIProblemList (params) {
+    params = utils.filterEmptyValue(params)
+    return ajax('admin/aicontest', 'get', {
+      params
+    })
+  },
   getContestProblemList (params) {
     params = utils.filterEmptyValue(params)
     return ajax('admin/contest/problem', 'get', {
