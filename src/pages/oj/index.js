@@ -16,6 +16,7 @@ import VerticalMenu from '@oj/components/verticalMenu/verticalMenu.vue'
 import VerticalMenuItem from '@oj/components/verticalMenu/verticalMenu-item.vue'
 import '@/styles/index.less'
 
+import vuetify from '@/plugins/vuetify'
 import highlight from '@/plugins/highlight'
 import katex from '@/plugins/katex'
 import filters from '@/utils/filters.js'
@@ -35,7 +36,6 @@ import 'echarts/lib/component/markPoint'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import '@/styles/app.scss'
 
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
@@ -69,4 +69,4 @@ Vue.prototype.$error = (s) => Vue.prototype.$Message.error(s)
 Vue.prototype.$info = (s) => Vue.prototype.$Message.info(s)
 Vue.prototype.$success = (s) => Vue.prototype.$Message.success(s)
 
-new Vue(Vue.util.extend({router, store, i18n}, App)).$mount('#app')
+new Vue(Vue.util.extend({router, store, i18n, vuetify}, App)).$mount('#app')

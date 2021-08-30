@@ -22,6 +22,9 @@ export default {
       params
     })
   },
+  getFAQList () {
+    return ajax('faq', 'get')
+  },
   login (data) {
     return ajax('login', 'post', {
       data
