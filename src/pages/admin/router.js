@@ -71,12 +71,17 @@ export default new VueRouter({
         },
         {
           path: '/aicontest',
-          name: 'aicontest-list',
+          name: 'aiproblem-list',
           component: AIContestList
         },
         {
           path: '/aicontest/create',
-          name: 'create-problem',
+          name: 'create-aiproblem',
+          component: AIContest
+        },
+        {
+          path: '/aicontest/edit/:problemId',
+          name: 'edit-aiproblem',
           component: AIContest
         },
         {
