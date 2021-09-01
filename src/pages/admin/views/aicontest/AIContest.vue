@@ -39,6 +39,24 @@
               <Simditor v-model="problem.schedule_description"></Simditor>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item :label="$t('m.Contest_Start_Time')" required>
+              <el-date-picker
+                v-model="problem.start_time"
+                type="datetime"
+                :placeholder="$t('m.Contest_Start_Time')">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label="$t('m.Contest_End_Time')" required>
+              <el-date-picker
+                v-model="problem.end_time"
+                type="datetime"
+                :placeholder="$t('m.Contest_End_Time')">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
         </el-row>
         <!--
         <el-row :gutter="20">
@@ -83,7 +101,7 @@
               </el-switch>
             </el-form-item>
           </el-col>
-          <!--
+          
           <el-col :span="8">
             <el-form-item :label="$t('m.Tag')" :error="error.tags" required>
               <span class="tags">
@@ -110,7 +128,7 @@
               <el-button class="button-new-tag" v-else size="small" @click="inputVisible = true">+ {{$t('m.New_Tag')}}</el-button>
             </el-form-item>
           </el-col>
-          -->
+         
           <el-col :span="8">
             <el-form-item :label="$t('m.Languages')" :error="error.languages" required>
               <el-checkbox-group v-model="problem.languages">
@@ -295,7 +313,9 @@
           title: {required: true, message: 'Title is required', trigger: 'blur'},
           summary_description: {required: true, message: 'Input Description is required', trigger: 'blur'},
           rule_description: {required: true, message: 'Output Description is required', trigger: 'blur'},
-          schedule_description: {required: true, message: 'Schedule Description is required', trigger: 'blur'}
+          schedule_description: {required: true, message: 'Schedule Description is required', trigger: 'blur'},
+          start_time: {required: true, message: 'Schedule Description is required', trigger: 'blur'},
+          end_time: {required: true, message: 'Schedule Description is required', trigger: 'blur'}
         },
         loadingCompile: false,
         mode: '',
@@ -340,6 +360,8 @@
           summary_description: '',
           rule_description: '',
           schedule_description: '',
+          start_time: '',
+          end_time: '',
           memory_limit: 256,
           difficulty: 'Low',
           visible: true,
@@ -457,17 +479,17 @@
         this.problem.test_case_score = []
         this.problem.test_case_id = ''
       },
-      // addTag () {
-      //   let inputValue = this.tagInput
-      //   if (inputValue) {
-      //     this.problem.tags.push(inputValue)
-      //   }
-      //   this.inputVisible = false
-      //   this.tagInput = ''
-      // },
-      // closeTag (tag) {
-      //   this.problem.tags.splice(this.problem.tags.indexOf(tag), 1)
-      // },
+      addTag () {
+        let inputValue = this.tagInput
+        if (inputValue) {
+          this.problem.tags.push(inputValue)
+        }
+        this.inputVisible = false
+        this.tagInput = ''
+      },
+      closeTag (tag) {
+        this.problem.tags.splice(this.problem.tags.indexOf(tag), 1)
+      },
       addSample () {
         this.problem.samples.push({input: '', output: ''})
       },
@@ -529,11 +551,11 @@
             return
           }
         }
-        // if (!this.problem.tags.length) {
-        //   this.error.tags = 'Please add at least one tag'
-        //   this.$error(this.error.tags)
-        //   return
-        // }
+        if (!this.problem.tags.length) {
+          this.error.tags = 'Please add at least one tag'
+          this.$error(this.error.tags)
+          return
+        }
         if (this.problem.spj) {
           if (!this.problem.spj_code) {
             this.error.spj = 'Spj code is required'
