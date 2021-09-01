@@ -8,6 +8,9 @@
       <Menu-item name="/problem">
         {{$t('m.NavProblems')}}
       </Menu-item>
+      <Menu-item name="/aicontest">
+        {{$t('AI Contest')}}
+      </Menu-item>
       <Menu-item name="/contest">
         {{$t('m.Contests')}}
       </Menu-item>
