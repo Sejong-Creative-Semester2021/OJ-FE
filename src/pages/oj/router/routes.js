@@ -162,9 +162,9 @@ export default [
     ]
   },
   {
-    path: '/about',
-    name: 'about',
-    meta: {title: 'About'},
+    path: '/announcement',
+    name: 'announcement',
+    meta: {title: 'Announcement'},
     component: About
   },
   {

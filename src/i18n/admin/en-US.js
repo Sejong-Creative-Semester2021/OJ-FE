@@ -37,6 +37,7 @@ export const m = {
   Announcement_Title: 'Title',
   Announcement_Content: 'Content',
   Announcement_visible: 'Visible',
+  Announcement_important: 'Important',
   // FAQ.vue
   General_FAQ: 'FAQ',
   FAQ_Question: 'Question',

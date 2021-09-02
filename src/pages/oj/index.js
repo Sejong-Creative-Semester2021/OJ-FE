@@ -7,6 +7,7 @@ import i18n from '@/i18n'
 import VueClipboard from 'vue-clipboard2'
 import VueAnalytics from 'vue-analytics'
 import { GOOGLE_ANALYTICS_ID } from '@/utils/constants'
+import VueDayjs from 'vue-dayjs-plugin'
 
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
@@ -46,6 +47,7 @@ Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)
 })
 
+Vue.use(VueDayjs)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueClipboard)
