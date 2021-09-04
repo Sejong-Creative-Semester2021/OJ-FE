@@ -77,7 +77,7 @@
       return {
         limit: 10,
         total: 10,
-        btnLoading: true,
+        btnLoading: false,
         announcements: [],
         announcement: '',
         listVisible: true,
@@ -108,12 +108,6 @@
           this.getAnnouncementList()
         }
       },
-      pushRouter () {
-        this.$router.push({
-          name: 'announcement',
-          query: utils.filterEmptyValue(this.query)
-        })
-      },
       getAnnouncementList (page = 1) {
         this.btnLoading = true
         api.getAnnouncementList((this.query.page - 1) * this.query.limit, this.limit, this.query).then(res => {
@@ -123,6 +117,13 @@
         }, () => {
           this.btnLoading = false
         })
+      },
+      pushRouter () {
+        this.$router.push({
+          name: 'announcement',
+          query: utils.filterEmptyValue(this.query)
+        })
+        this.getAnnouncementList()
       },
       getContestAnnouncementList () {
         this.btnLoading = true
