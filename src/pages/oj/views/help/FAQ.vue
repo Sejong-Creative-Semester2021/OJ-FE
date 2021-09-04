@@ -7,15 +7,15 @@
       <v-expansion-panels focusable>
         <v-expansion-panel v-for="faq in orderedFAQ" :key="faq.question">
           <v-expansion-panel-header>
-            <span class="header">{{faq.question}}</span>
+            <span class="header">Q. {{faq.question}}</span>
             <template v-slot:actions>
               <v-icon color="primary" class="icon">
                 $expand
               </v-icon>
             </template>
           </v-expansion-panel-header>
-          <v-expansion-panel-content v-html="faq.answer" key="answer" class="content-container">
-            {{faq.answer}}
+          <v-expansion-panel-content>
+            <div v-html="faq.answer.replace('\n', '<br />')" key="answer" class="content-container"></div>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -55,6 +55,8 @@
     },
     computed: {
       orderedFAQ: function () {
+        // this.faqs.answer = this.faqs.answer.replace('\n', '<br />')
+        // console.log(this.faqs)
         return _.orderBy(this.faqs, ['id'], ['asc'])
         // orderBy를 created_by를 통해서 정렬하고자 했는데 실패
         // -> 살펴보니 created_by가 단순히 숫자로만 이뤄진게 아니여서 그런듯.
