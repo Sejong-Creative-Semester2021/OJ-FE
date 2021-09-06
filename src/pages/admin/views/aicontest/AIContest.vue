@@ -39,26 +39,8 @@
               <Simditor v-model="problem.schedule_description"></Simditor>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item :label="$t('m.Contest_Start_Time')" required>
-              <el-date-picker
-                v-model="problem.start_time"
-                type="datetime"
-                :placeholder="$t('m.Contest_Start_Time')">
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item :label="$t('m.Contest_End_Time')" required>
-              <el-date-picker
-                v-model="problem.end_time"
-                type="datetime"
-                :placeholder="$t('m.Contest_End_Time')">
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
         </el-row>
-        <!--
+        
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item :label="$t('m.Time_Limit') + ' (ms)' " required>
@@ -81,7 +63,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        -->
+        
         <el-row :gutter="20">
           <el-col :span="4">
             <el-form-item :label="$t('m.Visible')">
@@ -101,7 +83,6 @@
               </el-switch>
             </el-form-item>
           </el-col>
-          
           <el-col :span="8">
             <el-form-item :label="$t('m.Tag')" :error="error.tags" required>
               <span class="tags">
@@ -128,7 +109,6 @@
               <el-button class="button-new-tag" v-else size="small" @click="inputVisible = true">+ {{$t('m.New_Tag')}}</el-button>
             </el-form-item>
           </el-col>
-         
           <el-col :span="8">
             <el-form-item :label="$t('m.Languages')" :error="error.languages" required>
               <el-checkbox-group v-model="problem.languages">
@@ -229,8 +209,7 @@
                 name="file"
                 :data="{spj: problem.spj}"
                 :show-file-list="true"
-                :on-success="uploadSucceeded"
-                :on-error="uploadFailed">
+                :on-success="uploadSucceeded">
                 <el-button size="small" type="primary" icon="el-icon-fa-upload">Choose File</el-button>
               </el-upload>
             </el-form-item>
@@ -313,9 +292,7 @@
           title: {required: true, message: 'Title is required', trigger: 'blur'},
           summary_description: {required: true, message: 'Input Description is required', trigger: 'blur'},
           rule_description: {required: true, message: 'Output Description is required', trigger: 'blur'},
-          schedule_description: {required: true, message: 'Schedule Description is required', trigger: 'blur'},
-          start_time: {required: true, message: 'Schedule Description is required', trigger: 'blur'},
-          end_time: {required: true, message: 'Schedule Description is required', trigger: 'blur'}
+          schedule_description: {required: true, message: 'Schedule Description is required', trigger: 'blur'}
         },
         loadingCompile: false,
         mode: '',
@@ -361,7 +338,6 @@
           rule_description: '',
           schedule_description: '',
           start_time: '',
-          end_time: '',
           memory_limit: 256,
           difficulty: 'Low',
           visible: true,
@@ -464,16 +440,16 @@
           this.problem.spj = !this.problem.spj
         }
       },
-      // querySearch (queryString, cb) {
-      //   api.getProblemTagList({ keyword: queryString }).then(res => {
-      //     let tagList = []
-      //     for (let tag of res.data.data) {
-      //       tagList.push({value: tag.name})
-      //     }
-      //     cb(tagList)
-      //   }).catch(() => {
-      //   })
-      // },
+      querySearch (queryString, cb) {
+        api.getProblemTagList({ keyword: queryString }).then(res => {
+          let tagList = []
+          for (let tag of res.data.data) {
+            tagList.push({value: tag.name})
+          }
+          cb(tagList)
+        }).catch(() => {
+        })
+      },
       resetTestCase () {
         this.testCaseUploaded = false
         this.problem.test_case_score = []
@@ -497,10 +473,10 @@
         this.problem.samples.splice(index, 1)
       },
       uploadSucceeded (response) {
-        if (response.error) {
-          this.$error(response.data)
-          return
-        }
+        // if (response.error) {
+        //   this.$error(response.data)
+        //   return
+        // }
         let fileList = response.data.info
         for (let file of fileList) {
           file.score = (100 / fileList.length).toFixed(0)
@@ -573,11 +549,11 @@
           this.$error(this.error.languages)
           return
         }
-        if (!this.testCaseUploaded) {
-          this.error.testCase = 'Test case is not uploaded yet'
-          this.$error(this.error.testCase)
-          return
-        }
+        // if (!this.testCaseUploaded) {
+        //   this.error.testCase = 'Test case is not uploaded yet'
+        //   this.$error(this.error.testCase)
+        //   return
+        // }
         if (this.problem.rule_type === 'OI') {
           for (let item of this.problem.test_case_score) {
             try {

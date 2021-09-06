@@ -1,13 +1,75 @@
 <template>
-  <div class="flex-container">
-    <div id="problem-main">
+  <Row type="flex" :gutter="18" align="center">
+    <Col id="problem-main" :span=17>
       <!--problem main-->
       <Panel :padding="40" shadow>
-        <div slot="title">{{problem.title}}</div>
+        <!-- <div slot="title">{{problem.title}}</div> -->
+        <!-- 추가 부분 -->
+        <div id="problem-content">
+          <p class="title">{{problem.title}}</p>
+          <!-- 중간에 이미지 삽입: 사이즈 조절 안돼서 주석 처리함
+          <b-card
+            overlay
+            img-src="https://picsum.photos/1024/480/?image=10"
+            img-alt="Card Image"
+            class="card-img-top"
+            text-variant="white"
+            title="Image Overlay"
+            sub-title="Subtitle">
+            <b-card-text>
+              Some quick example text to build on the card and make up the bulk of the card's content.
+            </b-card-text>
+          </b-card>
+          -->
+          
+          <b-tabs content-class="mt-3" fill>
+            <b-tab title="대회안내">
+              <p v-html=problem.description></p>
+              <b-tabs content-class="mt-3" fill>
+                <b-tab title="개요"><p class="content" v-html=problem.summary_description></p></b-tab>
+                <b-tab title="규칙"><p class="content" v-html=problem.rule_description></p></b-tab>
+                <b-tab title="일정"><p class="content" v-html=problem.schedule_description></p></b-tab>
+              </b-tabs>
+            </b-tab>
+
+            <b-tab title="데이터">
+              <p class="subtitle">{{'설명'}}</p>
+              <b-card>
+                <b-text>
+                  This will always be an aspect of
+                  except when the content is too tall.
+                </b-text>
+              </b-card>
+              <p class="subtitle">{{'상세'}}</p>
+                <b-card>
+                  <b-text>
+                    This will always be an aspect of
+                    except when the content is too tall.
+                  </b-text>
+              </b-card>
+            </b-tab>
+            <b-tab title="리더보드">
+              <Table :data="dataRank" :columns="columns" :loading="loadingTable" size="large"></Table>
+            </b-tab>
+            <b-tab title="제출">
+            <p class="subtitle">{{'제출'}}</p>
+              <b-card>
+                <b-form-file
+                  v-model="file1"
+                  placeholder="Choose a file or drop it here..."
+                  drop-placeholder="Drop file here..."
+                  size="lg"
+                ></b-form-file>
+                <div class="mt-3">Selected file: {{ file1 ? file1.name : '' }}</div>
+              </b-card>
+            </b-tab>
+          </b-tabs>
+        </div>
+
+      <!--
         <div id="problem-content" class="markdown-body" v-katex>
           <p class="title">{{$t('m.Description')}}</p>
           <p class="content" v-html=problem.description></p>
-          <!-- {{$t('m.music')}} -->
           <p class="title">{{$t('m.Input')}} <span v-if="problem.io_mode.io_mode=='File IO'">({{$t('m.FromFile')}}: {{ problem.io_mode.input }})</span></p>
           <p class="content" v-html=problem.input_description></p>
 
@@ -47,8 +109,10 @@
           </div>
 
         </div>
+        -->
       </Panel>
       <!--problem main end-->
+      <!--
       <Card :padding="20" id="submit-code" dis-hover>
         <CodeMirror :value.sync="code"
                     :languages="problem.languages"
@@ -99,8 +163,9 @@
           </Col>
         </Row>
       </Card>
-    </div>
-
+      -->
+    </Col>
+    <!--
     <div id="right-column">
       <VerticalMenu @on-click="handleRoute">
         <template v-if="this.contestID">
@@ -196,7 +261,8 @@
         <Button type="ghost" @click="graphVisible=false">{{$t('m.Close')}}</Button>
       </div>
     </Modal>
-  </div>
+    -->
+  </Row>
 </template>
 
 <script>
@@ -205,9 +271,10 @@
   import CodeMirror from '@oj/components/CodeMirror.vue'
   import storage from '@/utils/storage'
   import {FormMixin} from '@oj/components/mixins'
-  import {JUDGE_STATUS, CONTEST_STATUS, buildProblemCodeKey} from '@/utils/constants'
+  import {JUDGE_STATUS, CONTEST_STATUS, buildProblemCodeKey, RULE_TYPE} from '@/utils/constants'
   import api from '@oj/api'
   import {pie, largePie} from './chartData'
+  import utils from '@/utils/utils'
 
   // 只显示这些状态的图形占用
   const filtedStatus = ['-1', '-2', '0', '1', '2', '3', '4', '8']
@@ -220,6 +287,60 @@
     mixins: [FormMixin],
     data () {
       return {
+        // 추가 부분
+        dataRank: [],
+        columns: [
+          {
+            align: 'center',
+            width: 60,
+            render: (h, params) => {
+              return h('span', {}, params.index + (this.page - 1) * this.limit + 1)
+            }
+          },
+          {
+            title: this.$i18n.t('m.User_User'),
+            align: 'center',
+            render: (h, params) => {
+              return h('a', {
+                style: {
+                  'display': 'inline-block',
+                  'max-width': '200px'
+                },
+                on: {
+                  click: () => {
+                    this.$router.push(
+                      {
+                        name: 'user-home',
+                        query: {username: params.row.user.username}
+                      })
+                  }
+                }
+              }, params.row.user.username)
+            }
+          },
+          {
+            title: this.$i18n.t('m.mood'),
+            align: 'center',
+            key: 'mood'
+          },
+          {
+            title: this.$i18n.t('m.AC'),
+            align: 'center',
+            key: 'accepted_number'
+          },
+          {
+            title: this.$i18n.t('m.Total'),
+            align: 'center',
+            key: 'submission_number'
+          },
+          {
+            title: this.$i18n.t('m.Rating'),
+            align: 'center',
+            render: (h, params) => {
+              return h('span', utils.getACRate(params.row.accepted_number, params.row.submission_number))
+            }
+          }
+        ],
         statusVisible: false,
         captchaRequired: false,
         graphVisible: false,
@@ -240,6 +361,9 @@
         problem: {
           title: '',
           description: '',
+          summary_description: '',
+          rule_description: '',
+          schedule_description: '',
           testhint: '',
           my_status: '',
           template: {},
@@ -274,6 +398,7 @@
     mounted () {
       this.$store.commit(types.CHANGE_CONTEST_ITEM_VISIBLE, {menu: false})
       this.init()
+      this.getRankData(1)
     },
     methods: {
       ...mapActions(['changeDomTitle']),
@@ -305,6 +430,25 @@
           }
         }, () => {
           this.$Loading.error()
+        })
+      },
+      // 추가 부분
+      getRankData (page) {
+        let offset = (page - 1) * this.limit
+        let bar = this.$refs.chart
+        bar.showLoading({maskColor: 'rgba(250, 250, 250, 0.8)'})
+        this.loadingTable = true
+        api.getUserRank(offset, this.limit, RULE_TYPE.ACM).then(res => {
+          this.loadingTable = false
+          if (page === 1) {
+            this.changeCharts(res.data.data.results.slice(0, 10))
+          }
+          this.total = res.data.data.total
+          this.dataRank = res.data.data.results
+          bar.hideLoading()
+        }).catch(() => {
+          this.loadingTable = false
+          bar.hideLoading()
         })
       },
       changePie (problemData) {
@@ -525,15 +669,23 @@
     }
   }
 
+  .subtitle{
+    font-size: 20px;
+    font-weight: bold;
+  }
+
   #problem-content {
     margin-top: -50px;
+    .card-img-top{
+      width: 40rem;
+    }
     .title {
-      font-size: 20px;
-      font-weight: 400;
+      font-size: 27px;
+      font-weight: 730;
       margin: 25px 0 8px 0;
-      color: #3091f2;
+      margin-bottom: 20px;
       .copy {
-        padding-left: 8px;
+        padding-left: 10px;
       }
     }
     p.content {

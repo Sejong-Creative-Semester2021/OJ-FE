@@ -1,10 +1,11 @@
 <template>
-  <Row type="flex" :gutter="18">
-    <Col :span=19>
+  <Row type="flex" :gutter="18" align="center">
+    <Col :span=15>
     <Panel shadow>
-      <div slot="title">{{$t('AI Contest List')}}</div>
+      <div slot="title"><b>{{$t('진행중인 대회')}}</b></div>
       <div slot="extra">
         <ul class="filter">
+        <!--
           <li>
             <Dropdown @on-click="filterByDifficulty">
               <span>{{query.difficulty === '' ? this.$i18n.t('m.Difficulty') : this.$i18n.t('m.' + query.difficulty)}}
@@ -18,7 +19,6 @@
               </Dropdown-menu>
             </Dropdown>
           </li>
-          <!--
           <li>
             <i-switch size="large" @on-change="handleTagsVisible">
               <span slot="open">{{$t('m.Tags')}}</span>
@@ -33,14 +33,37 @@
                    placeholder="keyword"
                    icon="ios-search-strong"/>
           </li>
+          <!--
           <li>
             <Button type="info" @click="onReset">
               <Icon type="refresh"></Icon>
               {{$t('m.Reset')}}
             </Button>
           </li>
+          -->
         </ul>
       </div>
+      <!-- 추가 부분 -->
+      <b-card-group columns id="problem-group">
+        <b-card v-for="problem in problemList"
+                        :key="problem.title"
+                        img-src="https://picsum.photos/1024/480/?image=10"
+                        img-top
+                        shadow
+                        style="max-width: 18rem;"
+                        class="mb-2"
+                        id="problem-card">
+          <b-card-body class="problem-content">
+            <b-card-title class="problem-title" @click="goProblem(problem._id)">{{problem.title}}</b-card-title>
+            <b-card-sub-title class="problem-subtitle">{{problem.created_by.username}}</b-card-sub-title>
+            <b-card-text class="problem-text">
+              <p class="content" v-html=problem.schedule_description></p> 
+            </b-card-text>
+            <b-button block variant="dark" size="sm" @click="goProblem(problem._id)">JOIN</b-button>
+          </b-card-body>
+        </b-card>
+      </b-card-group>
+      
       <Table style="width: 100%; font-size: 16px;"
              :columns="problemTableColumns"
              :data="problemList"
@@ -76,7 +99,7 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import {mapGetters, mapActions} from 'vuex'
   import api from '@oj/api'
   import utils from '@/utils/utils'
   import { ProblemMixin } from '@oj/components/mixins'
@@ -204,6 +227,10 @@
           query: utils.filterEmptyValue(this.query)
         })
       },
+      // 추가 부분
+      goProblem (problemID) {
+        this.$router.push({name: 'aiproblem-details', params: {problemID: problemID}})
+      },
       getProblemList () {
         let offset = (this.query.page - 1) * this.query.limit
         this.loadings.table = true
@@ -304,4 +331,54 @@
   #pick-one {
     margin-top: 10px;
   }
+  
+  #card-deck{
+    display: flex;
+  }
+
+  #problem-group{
+    padding: 20px;
+    margin-left: 60px;
+    margin-right: 60px;
+
+    .problem-content{
+      margin-top: -25px;
+      margin-bottom: -25px;
+    }
+    .problem-title{
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .problem-subtitle{
+      font-size: 16px;
+    }
+    .problem-text{
+      font-weight: 600;
+      color: #686868;
+    }
+  }
+
+  
+  #list {
+    margin-bottom: 10px;
+    margin-top: 20px;
+    ul {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      list-style-type: none;
+      li {
+        margin-bottom: 1px;
+        p {
+          display: inline-block;
+        }
+        p:first-child {
+          width: 50px;
+        }
+        p:last-child {
+          float: right;
+        }
+      }
+    }
+  }
 </style>
+
