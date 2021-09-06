@@ -1,15 +1,25 @@
 <template>
   <Panel shadow :padding="10" class="panel">
-    <div slot="title">
+    <div v-if="listVisible" slot="title">
       {{title}}
     </div>
+    <div v-else slot="title" class="detailtitle">
+      {{title}}
+      <div v-if="!listVisible">
+        <span class="detailcreator"> {{$t('m.By')}} {{announcement.created_by.username}}</span>
+        <span class="detaildate">{{$date(announcement.create_time).format('YYYY-MM-DD')}}</span>
+      </div>
+    </div>
     <div slot="extra">
-      <Input v-model="query.keyword"
+      <Input v-if="listVisible"
+             v-model="query.keyword"
              @on-enter="filterByKeyword"
              @on-click="filterByKeyword"
              placeholder="keyword"
              icon="ios-search-strong"/>
     </div>
+    
+    <hr v-if="!listVisible">
     <transition-group name="announcement-animate" mode="in-out">
       <template v-if="listVisible">
         <ul class="announcements-container" key="list">
@@ -58,8 +68,12 @@
       </template>
       <template v-else>
         <div v-katex v-html="announcement.content" key="content" class="content-container markdown-body"></div>
+
       </template>
+      
     </transition-group>
+    <hr v-if="!listVisible">
+    <Button v-if="!listVisible" type="ghost" icon="ios-undo" @click="goBack">{{$t('m.Back')}}</Button>
   </Panel>
 </template>
 
@@ -125,6 +139,13 @@
         })
         this.getAnnouncementList()
       },
+      pushDetailRouter (announcement) {
+        this.announcement = announcement
+        this.$router.push({
+          name: 'announcement-details',
+          paramas: {announcementID: announcement.id}
+        })
+      },
       getContestAnnouncementList () {
         this.btnLoading = true
         api.getContestAnnouncementList(this.$route.params.contestID).then(res => {
@@ -166,6 +187,22 @@
   .panel{
     margin-left: 15%;
     margin-right: 15%;
+  }
+  .ivu-btn-ghost:hover {
+    border-color: gray !Important;
+    color: gray !Important;
+  }
+  .detailcreator {
+    padding-top: 10px;
+    font-size: 15px;
+    color: gray;
+  }
+  .detaildate {
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    font-size: 15px;
+    color: gray;
   }
   .announcements-container {
     margin-top: -10px;
@@ -230,7 +267,7 @@
   }
 
   .content-container {
-    padding: 0 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
   }
 
   .no-announcement {
@@ -240,5 +277,9 @@
 
   .announcement-animate-enter-active {
     animation: fadeIn 1s;
+  }
+  
+  .detailtitle {
+    padding-bottom: 0px !Important;
   }
 </style>

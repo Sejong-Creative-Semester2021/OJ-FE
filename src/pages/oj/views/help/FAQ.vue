@@ -7,6 +7,11 @@
       <v-expansion-panel v-for="faq in faqs" :key="faq.question">
         <v-expansion-panel-header>
           {{faq.question}}
+          <template v-slot:actions>
+            <v-icon right>
+              {{mdiMenuDown}}
+            </v-icon>
+          </template>
         </v-expansion-panel-header>
         <v-expansion-panel-content v-html="faq.answer" key="answer" class="content-container">
           {{faq.answer}}
@@ -18,11 +23,13 @@
 
 <script>
   import api from '@oj/api'
+  import { mdiMenuDown } from '@mdi/js'
 
   export default {
     name: 'FAQ',
     data () {
       return {
+        mdiMenuDown,
         faqs: [],
         faq: ''
       }

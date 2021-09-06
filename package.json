@@ -13,6 +13,7 @@
     "start": "npm run dev"
   },
   "dependencies": {
+    "@mdi/js": "^5.9.55",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.5.3",
