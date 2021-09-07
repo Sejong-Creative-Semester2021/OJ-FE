@@ -18,29 +18,53 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item prop="description" :label="$t('m.Description')" required>
-              <Simditor v-model="problem.description"></Simditor>
+            <el-form-item prop="contest_description" :label="'Contest Description'" required>
+              <Simditor v-model="problem.contest_description"></Simditor>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="24">
+          <!-- <el-col :span="24">
             <el-form-item prop="summary_description" :label="$t('Summary')" required>
               <Simditor v-model="problem.summary_description"></Simditor>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="24">
-            <el-form-item prop="rule_description" :label="$t('Rule')" required>
+            <el-form-item prop="rule_description" :label="'Rule'" required>
               <Simditor v-model="problem.rule_description"></Simditor>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item prop="schedule_description" :label="$t('Schedule')" required>
+            <el-form-item prop="schedule_description" :label="'Schedule'" required>
               <Simditor v-model="problem.schedule_description"></Simditor>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item :label="'Contest_Start_Time'" required>
+              <el-date-picker
+                v-model="problem.start_time"
+                type="datetime"
+                :placeholder="'Contest_Start_Time'">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label="'Contest_End_Time'" required>
+              <el-date-picker
+                v-model="problem.end_time"
+                type="datetime"
+                :placeholder="'Contest_End_Time'">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <!-- reward -->
+          <el-col :span="24">
+            <el-form-item prop="reward_description" :label="$t('Reward Description')" required>
+              <Simditor v-model="problem.reward_description"></Simditor>
+            </el-form-item>
+          </el-col>
         </el-row>
-        
+        <!--
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item :label="$t('m.Time_Limit') + ' (ms)' " required>
@@ -63,9 +87,9 @@
             </el-form-item>
           </el-col>
         </el-row>
-        
+        -->
         <el-row :gutter="20">
-          <el-col :span="4">
+          <!-- <el-col :span="4">
             <el-form-item :label="$t('m.Visible')">
               <el-switch
                 v-model="problem.visible"
@@ -81,6 +105,19 @@
                 active-text=""
                 inactive-text="">
               </el-switch>
+            </el-form-item>
+          </el-col> -->
+          <el-col :span="6">
+            <el-form-item :label="$t('m.TestCase')" :error="error.testcase">
+              <el-upload
+                action="/api/admin/test_case"
+                name="file"
+                :data="{spj: problem.spj}"
+                :show-file-list="true"
+                :on-success="uploadSucceeded"
+                :on-error="uploadFailed">
+                <el-button size="small" type="primary" icon="el-icon-fa-upload">Choose File</el-button>
+              </el-upload>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -108,8 +145,8 @@
               </el-autocomplete>
               <el-button class="button-new-tag" v-else size="small" @click="inputVisible = true">+ {{$t('m.New_Tag')}}</el-button>
             </el-form-item>
-          </el-col>
-          <el-col :span="8">
+          </el-col>          
+          <!-- <el-col :span="8">
             <el-form-item :label="$t('m.Languages')" :error="error.languages" required>
               <el-checkbox-group v-model="problem.languages">
                 <el-tooltip class="spj-radio" v-for="lang in allLanguage.languages" :key="'spj'+lang.name" effect="dark"
@@ -118,8 +155,8 @@
                 </el-tooltip>
               </el-checkbox-group>
             </el-form-item>
-          </el-col>
-        </el-row>
+          </el-col> -->
+        </el-row>        
         <div>
           <el-form-item v-for="(sample, index) in problem.samples" :key="'sample'+index">
             <Accordion :title="'Sample' + (index + 1)">
@@ -151,14 +188,17 @@
             </Accordion>
           </el-form-item>
         </div>
-        <div class="add-sample-btn">
+        <!-- <div class="add-sample-btn">
           <button type="button" class="add-samples" @click="addSample()"><i class="el-icon-plus"></i>{{$t('m.Add_Sample')}}
           </button>
-        </div>
-        <el-form-item style="margin-top: 20px" :label="$t('testhint')">
-          <Simditor v-model="problem.testhint" placeholder=""></Simditor>
+        </div> -->
+        <el-form-item prop="data_description" :label="$t('Data Description')" required>
+          <Simditor v-model="problem.data_description"></Simditor>
         </el-form-item>
-        <el-form-item :label="$t('m.Code_Template')">
+        <el-form-item style="margin-top: 20px" :label="$t('Hint')">
+          <Simditor v-model="problem.hint" placeholder=""></Simditor>
+        </el-form-item>
+        <!-- <el-form-item :label="$t('m.Code_Template')">
           <el-row>
             <el-col :span="24" v-for="(v, k) in template" :key="'template'+k">
               <el-form-item>
@@ -169,13 +209,13 @@
               </el-form-item>
             </el-col>
           </el-row>
-        </el-form-item>
-        <el-form-item :label="$t('m.Special_Judge')" :error="error.spj">
+        </el-form-item> -->
+        <!-- <el-form-item :label="$t('m.Special_Judge')" :error="error.spj">
           <el-col :span="24">
             <el-checkbox v-model="problem.spj" @click.native.prevent="switchSpj()">{{$t('m.Use_Special_Judge')}}</el-checkbox>
           </el-col>
-        </el-form-item>
-        <el-form-item v-if="problem.spj">
+        </el-form-item> -->
+        <!-- <el-form-item v-if="problem.spj">
           <Accordion :title="$t('m.Special_Judge_Code')">
             <template slot="header">
               <span>{{$t('m.SPJ_language')}}</span>
@@ -192,7 +232,7 @@
             </template>
             <code-mirror v-model="problem.spj_code" :mode="spjMode"></code-mirror>
           </Accordion>
-        </el-form-item>
+        </el-form-item> -->
         <el-row :gutter="20">
           <el-col :span="4">
             <el-form-item :label="$t('m.Type')">
@@ -202,18 +242,7 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
-            <el-form-item :label="$t('m.TestCase')" :error="error.testcase">
-              <el-upload
-                action="/api/admin/test_case"
-                name="file"
-                :data="{spj: problem.spj}"
-                :show-file-list="true"
-                :on-success="uploadSucceeded">
-                <el-button size="small" type="primary" icon="el-icon-fa-upload">Choose File</el-button>
-              </el-upload>
-            </el-form-item>
-          </el-col>
+    
 
           <el-col :span="6">
             <el-form-item :label="$t('m.IOMode')">
@@ -290,9 +319,14 @@
         rules: {
           _id: {required: true, message: 'Display ID is required', trigger: 'blur'},
           title: {required: true, message: 'Title is required', trigger: 'blur'},
-          summary_description: {required: true, message: 'Input Description is required', trigger: 'blur'},
-          rule_description: {required: true, message: 'Output Description is required', trigger: 'blur'},
-          schedule_description: {required: true, message: 'Schedule Description is required', trigger: 'blur'}
+          // summary_description: {required: true, message: 'Input Description is required', trigger: 'blur'},
+          contest_description: {required: true, message: 'Contest Description is required', trigger: 'blur'},
+          rule_description: {required: true, message: 'Rule Description is required', trigger: 'blur'},
+          schedule_description: {required: true, message: 'Schedule Description is required', trigger: 'blur'},
+          start_time: {required: true, message: 'Start Time is required', trigger: 'blur'},
+          end_time: {required: true, message: 'End Time is required', trigger: 'blur'},
+          reward_description: {required: true, message: 'Reward Description is required', trigger: 'blur'},
+          data_description: {required: true, message: 'Data Description is required', trigger: 'blur'}
         },
         loadingCompile: false,
         mode: '',
@@ -333,11 +367,13 @@
         this.problem = this.reProblem = {
           _id: '',
           title: '',
-          description: '',
-          summary_description: '',
+          contest_description: '',
           rule_description: '',
           schedule_description: '',
           start_time: '',
+          end_time: '',
+          reward_description: '',
+          data_description: '',
           memory_limit: 256,
           difficulty: 'Low',
           visible: true,
@@ -353,7 +389,7 @@
           test_case_id: '',
           test_case_score: [],
           rule_type: 'ACM',
-          testhint: '',
+          hint: '',
           source: '',
           io_mode: {'io_mode': 'Standard IO', 'input': 'input.txt', 'output': 'output.txt'}
         }
@@ -473,10 +509,10 @@
         this.problem.samples.splice(index, 1)
       },
       uploadSucceeded (response) {
-        // if (response.error) {
-        //   this.$error(response.data)
-        //   return
-        // }
+        if (response.error) {
+          this.$error(response.data)
+          return
+        }
         let fileList = response.data.info
         for (let file of fileList) {
           file.score = (100 / fileList.length).toFixed(0)
@@ -549,11 +585,11 @@
           this.$error(this.error.languages)
           return
         }
-        // if (!this.testCaseUploaded) {
-        //   this.error.testCase = 'Test case is not uploaded yet'
-        //   this.$error(this.error.testCase)
-        //   return
-        // }
+        if (!this.testCaseUploaded) {
+          this.error.testCase = 'Test case is not uploaded yet'
+          this.$error(this.error.testCase)
+          return
+        }
         if (this.problem.rule_type === 'OI') {
           for (let item of this.problem.test_case_score) {
             try {
