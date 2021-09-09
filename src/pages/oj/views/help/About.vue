@@ -1,15 +1,25 @@
 <template>
   <Panel shadow :padding="10" class="panel">
-    <div slot="title">
+    <div v-if="listVisible" slot="title">
       {{title}}
     </div>
+    <div v-else slot="title" class="detailtitle">
+      {{title}}
+      <div v-if="!listVisible">
+        <span class="detailcreator"> {{$t('m.By')}} {{announcement.created_by.username}}</span>
+        <span class="detaildate">{{$date(announcement.create_time).format('YYYY-MM-DD')}}</span>
+      </div>
+    </div>
     <div slot="extra">
-      <Input v-model="query.keyword"
+      <Input v-if="listVisible"
+             v-model="query.keyword"
              @on-enter="filterByKeyword"
              @on-click="filterByKeyword"
              placeholder="keyword"
              icon="ios-search-strong"/>
     </div>
+    
+    <hr v-if="!listVisible">
     <transition-group name="announcement-animate" mode="in-out">
       <template v-if="listVisible">
         <ul class="announcements-container" key="list">
@@ -58,8 +68,12 @@
       </template>
       <template v-else>
         <div v-katex v-html="announcement.content" key="content" class="content-container markdown-body"></div>
+
       </template>
+      
     </transition-group>
+    <hr v-if="!listVisible">
+    <Button v-if="!listVisible" type="ghost" icon="ios-undo" @click="goBack">{{$t('m.Back')}}</Button>
   </Panel>
 </template>
 
@@ -89,8 +103,30 @@
         }
       }
     },
+    created () {
+      // detect browser back button
+      // window.addEventListener('popstate', this.popstateEventAction)
+    },
     mounted () {
       this.init()
+      // browser back button
+      // window.onpopstate = function (event) {
+      //   console.log('check back')
+      //   if (!this.listVisible) {
+      //     // event stop and show announcementlist visible
+      //     // event.preventDefault()
+      //     console.log('not list visible')
+      //     this.listVisible = true
+      //     this.announcement = ''
+      //     this.pushRouter()
+      //   }
+      // }
+      window.onpopstate = event => {
+        if (!this.listVisible) {
+          this.goBack()
+          this.$router.push('/announcement') // redirect to home, for example
+        }
+      }
     },
     methods: {
       init () {
@@ -125,6 +161,13 @@
         })
         this.getAnnouncementList()
       },
+      pushDetailRouter (announcement) {
+        this.announcement = announcement
+        this.$router.push({
+          name: 'announcement-details',
+          paramas: {announcementID: announcement.id}
+        })
+      },
       getContestAnnouncementList () {
         this.btnLoading = true
         api.getContestAnnouncementList(this.$route.params.contestID).then(res => {
@@ -146,6 +189,21 @@
         this.query.page = 1
         this.pushRouter()
       }
+      // add detect event methods
+      // popstateEventAction () {
+      //   console.log('activate2')
+      //   // if (!this.listVisible) {
+      //   //   this.listVisible = true
+      //   //   this.announcement = ''
+      //   //   this.getAnnouncementList()
+      //   //   this.removePopstateEventAction()
+      //   // }
+      //   this.removePopstateEventAction()
+      // },
+      // removePopstateEventAction () {
+      //   console.log('activate')
+      //   window.removeEventListener('popstate', this.popstateEventAction)
+      // }
     },
     computed: {
       title () {
@@ -166,6 +224,22 @@
   .panel{
     margin-left: 15%;
     margin-right: 15%;
+  }
+  .ivu-btn-ghost:hover {
+    border-color: gray !Important;
+    color: gray !Important;
+  }
+  .detailcreator {
+    padding-top: 10px;
+    font-size: 15px;
+    color: gray;
+  }
+  .detaildate {
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    font-size: 15px;
+    color: gray;
   }
   .announcements-container {
     margin-top: -10px;
@@ -230,7 +304,7 @@
   }
 
   .content-container {
-    padding: 0 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
   }
 
   .no-announcement {
@@ -240,5 +314,9 @@
 
   .announcement-animate-enter-active {
     animation: fadeIn 1s;
+  }
+  
+  .detailtitle {
+    padding-bottom: 0px !Important;
   }
 </style>
