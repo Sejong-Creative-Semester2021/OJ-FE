@@ -319,4 +319,8 @@
   .detailtitle {
     padding-bottom: 0px !Important;
   }
+<<<<<<< HEAD
 </style>
+=======
+</style>
+>>>>>>> 2e06b701dc09b4004512b62a29a2ff8828ddcd64
