@@ -1,12 +1,12 @@
 <template>
-  <div class="announcement view">
-    <Panel :title="$t('m.General_Announcement')">
+  <div class="faq view">
+    <Panel :title="$t('m.FAQ')">
       <div class="list">
         <el-table
           v-loading="loading"
           element-loading-text="loading"
           ref="table"
-          :data="announcementList"
+          :data="faqList"
           style="width: 100%">
           <el-table-column
             width="100"
@@ -14,8 +14,8 @@
             label="ID">
           </el-table-column>
           <el-table-column
-            prop="title"
-            label="Title">
+            prop="question"
+            label="Question">
           </el-table-column>
           <el-table-column
             prop="create_time"
@@ -37,18 +37,6 @@
           </el-table-column>
           <el-table-column
             width="100"
-            prop="vimportant"
-            label="Important">
-            <template slot-scope="scope">
-              <el-switch v-model="scope.row.important"
-                         active-text=""
-                         inactive-text=""
-                         @change="handleVisibleSwitch(scope.row)">
-              </el-switch>
-            </template>
-          </el-table-column>
-          <el-table-column
-            width="100"
             prop="visible"
             label="Visible">
             <template slot-scope="scope">
@@ -64,15 +52,14 @@
             label="Option"
             width="200">
             <div slot-scope="scope">
-              <icon-btn name="Edit" icon="edit" @click.native="openAnnouncementDialog(scope.row.id)"></icon-btn>
-              <icon-btn name="Delete" icon="trash" @click.native="deleteAnnouncement(scope.row.id)"></icon-btn>
+              <icon-btn name="Edit" icon="edit" @click.native="openFAQDialog(scope.row.id)"></icon-btn>
+              <icon-btn name="Delete" icon="trash" @click.native="deleteFAQ(scope.row.id)"></icon-btn>
             </div>
           </el-table-column>
         </el-table>
         <div class="panel-options">
-          <el-button type="primary" size="small" @click="openAnnouncementDialog(null)" icon="el-icon-plus">Create</el-button>
+          <el-button type="primary" size="small" @click="openFAQDialog(null)" icon="el-icon-plus">Create</el-button>
           <el-pagination
-            v-if="!contestID"
             class="page"
             layout="prev, pager, next"
             @current-change="currentChange"
@@ -83,38 +70,33 @@
       </div>
     </Panel>
     <!--对话框-->
-    <el-dialog :title="announcementDialogTitle" :visible.sync="showEditAnnouncementDialog"
+    <el-dialog :title="faqDialogTitle" :visible.sync="showEditFAQDialog"
                @open="onOpenEditDialog" :close-on-click-modal="false">
       <el-form label-position="top">
-        <el-form-item :label="$t('m.Announcement_Title')" required>
+
+        <el-form-item :label="$t('m.FAQ_Question')" required>
           <el-input
-            v-model="announcement.title"
-            :placeholder="$t('m.Announcement_Title')" class="title-input">
+            v-model="faq.question"
+            :placeholder="$t('m.FAQ_Question')" class="title-input">
           </el-input>
         </el-form-item>
-        <el-form-item :label="$t('m.Announcement_Content')" required>
-          <Simditor v-model="announcement.content"></Simditor>
+
+        <el-form-item :label="$t('m.FAQ_Answer')" required>
+          <Simditor v-model="faq.answer"></Simditor>
         </el-form-item>
+
         <div class="visible-box">
-          <span>{{$t('m.Announcement_visible')}}</span>
+          <span>{{$t('m.FAQ_visible')}}</span>
           <el-switch
-            v-model="announcement.visible"
-            active-text=""
-            inactive-text="">
-          </el-switch>
-        </div>
-        <div class="visible-box">
-          <span>{{$t('m.Announcement_important')}}</span>
-          <el-switch
-            v-model="announcement.important"
+            v-model="faq.visible"
             active-text=""
             inactive-text="">
           </el-switch>
         </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
-          <cancel @click.native="showEditAnnouncementDialog = false"></cancel>
-          <save type="primary" @click.native="submitAnnouncement"></save>
+          <cancel @click.native="showEditFAQDialog = false"></cancel>
+          <save type="primary" @click.native="submitFAQ"></save>
         </span>
     </el-dialog>
   </div>
@@ -125,33 +107,31 @@
   import api from '../../api.js'
 
   export default {
-    name: 'Announcement',
+    name: 'FAQ',
     components: {
       Simditor
     },
     data () {
       return {
-        contestID: '',
         // 显示编辑公告对话框
-        showEditAnnouncementDialog: false,
+        showEditFAQDialog: false,
         // 公告列表
-        announcementList: [],
+        faqList: [],
         // 一页显示的公告数
         pageSize: 15,
         // 总公告数
         total: 0,
         // 当前公告id
-        currentAnnouncementId: null,
+        currentFAQId: null,
         mode: 'create',
         // 公告 (new | edit) model
-        announcement: {
-          title: '',
+        faq: {
+          question: '',
           visible: true,
-          content: '',
-          important: false
+          answer: ''
         },
         // 对话框标题
-        announcementDialogTitle: 'Edit Announcement',
+        faqDialogTitle: 'Edit FAQ',
         // 是否显示loading
         loading: true,
         // 当前页码
@@ -163,34 +143,20 @@
     },
     methods: {
       init () {
-        this.contestID = this.$route.params.contestId
-        if (this.contestID) {
-          this.getContestAnnouncementList()
-        } else {
-          this.getAnnouncementList(1)
-        }
+        this.getFAQList(1)
       },
       // 切换页码回调
       currentChange (page) {
         this.currentPage = page
-        this.getAnnouncementList(page)
+        this.getFAQList(page)
       },
-      getAnnouncementList (page) {
+      getFAQList (page) {
         this.loading = true
-        api.getAnnouncementList((page - 1) * this.pageSize, this.pageSize).then(res => {
+        api.getFAQList((page - 1) * this.pageSize, this.pageSize).then(res => {
           this.loading = false
           this.total = res.data.data.total
-          this.announcementList = res.data.data.results
+          this.faqList = res.data.data.results
         }, res => {
-          this.loading = false
-        })
-      },
-      getContestAnnouncementList () {
-        this.loading = true
-        api.getContestAnnouncementList(this.contestID).then(res => {
-          this.loading = false
-          this.announcementList = res.data.data
-        }).catch(() => {
           this.loading = false
         })
       },
@@ -210,39 +176,33 @@
       },
       // 提交编辑
       // 默认传入MouseEvent
-      submitAnnouncement (data = undefined) {
+      submitFAQ (data = undefined) {
         let funcName = ''
-        if (!data.title) {
+        if (!data.question) {
           data = {
-            id: this.currentAnnouncementId,
-            title: this.announcement.title,
-            content: this.announcement.content,
-            visible: this.announcement.visible,
-            important: this.announcement.important
+            id: this.currentFAQId,
+            question: this.faq.question,
+            answer: this.faq.answer,
+            visible: this.faq.visible
           }
         }
-        if (this.contestID) {
-          data.contest_id = this.contestID
-          funcName = this.mode === 'edit' ? 'updateContestAnnouncement' : 'createContestAnnouncement'
-        } else {
-          funcName = this.mode === 'edit' ? 'updateAnnouncement' : 'createAnnouncement'
-        }
+        funcName = this.mode === 'edit' ? 'updateFAQ' : 'createFAQ'
         api[funcName](data).then(res => {
-          this.showEditAnnouncementDialog = false
+          this.showEditFAQDialog = false
           this.init()
         }).catch()
       },
       // 删除公告
-      deleteAnnouncement (announcementId) {
-        this.$confirm('Are you sure you want to delete this announcement?', 'Warning', {
+      deleteFAQ (faqId) {
+        this.$confirm('Are you sure you want to delete this FAQ?', 'Warning', {
           confirmButtonText: 'Delete',
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           // then 为确定
           this.loading = true
-          let funcName = this.contestID ? 'deleteContestAnnouncement' : 'deleteAnnouncement'
-          api[funcName](announcementId).then(res => {
+          let funcName = 'deleteFAQ'
+          api[funcName](faqId).then(res => {
             this.loading = true
             this.init()
           })
@@ -251,37 +211,34 @@
           this.loading = false
         })
       },
-      openAnnouncementDialog (id) {
-        this.showEditAnnouncementDialog = true
+      openFAQDialog (id) {
+        this.showEditFAQDialog = true
         if (id !== null) {
-          this.currentAnnouncementId = id
-          this.announcementDialogTitle = 'Edit Announcement'
-          this.announcementList.find(item => {
-            if (item.id === this.currentAnnouncementId) {
-              this.announcement.title = item.title
-              this.announcement.visible = item.visible
-              this.announcement.important = item.important
-              this.announcement.content = item.content
+          this.currentFAQId = id
+          this.faqDialogTitle = 'Edit FAQ'
+          this.faqList.find(item => {
+            if (item.id === this.currentFAQId) {
+              this.faq.question = item.question
+              this.faq.visible = item.visible
+              this.faq.answer = item.answer
               this.mode = 'edit'
             }
           })
         } else {
-          this.announcementDialogTitle = 'Create Announcement'
-          this.announcement.title = ''
-          this.announcement.visible = true
-          this.announcement.important = false
-          this.announcement.content = ''
+          this.faqDialogTitle = 'Create FAQ'
+          this.faq.question = ''
+          this.faq.visible = true
+          this.faq.answer = ''
           this.mode = 'create'
         }
       },
       handleVisibleSwitch (row) {
         this.mode = 'edit'
-        this.submitAnnouncement({
+        this.submitFAQ({
           id: row.id,
-          title: row.title,
-          content: row.content,
-          visible: row.visible,
-          important: row.important
+          question: row.question,
+          answer: row.answer,
+          visible: row.visible
         })
       }
     },
