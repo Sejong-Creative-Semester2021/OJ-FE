@@ -37,6 +37,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import '@/styles/app.scss'
 
+// import Vuetify from '@/plugins/vuetify'
+
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
@@ -46,6 +48,7 @@ Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)
 })
 
+// Vue.use(Vuetify)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueClipboard)
