@@ -14,9 +14,12 @@ import Home from './Home.vue'
 import ProblemImportOrExport from './problem/ImportAndExport.vue'
 import Recruit from './recruit/Recruit.vue'
 import RecruitList from './recruit/RecruitList.vue'
+import AIContestList from './aicontest/AIContestList.vue'
+import AIContest from './aicontest/AIContest.vue'
 
 export {
   Announcement, User, Conf, JudgeServer, Problem, ProblemList, Contest,
   ContestList, Login, Home, PruneTestCase, Dashboard, ProblemImportOrExport,
-  Recruit, RecruitList, FAQ
+  Recruit, RecruitList, FAQ,
+  AIContest, AIContestList
 }

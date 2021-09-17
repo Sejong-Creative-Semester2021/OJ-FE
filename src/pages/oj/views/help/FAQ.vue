@@ -3,25 +3,6 @@
     <div slot="title">
       {{$t('m.FAQ')}}
     </div>
-<<<<<<< HEAD
-    <div>
-      <v-expansion-panels focusable>
-        <v-expansion-panel v-for="faq in orderedFAQ" :key="faq.question">
-          <v-expansion-panel-header>
-            <span class="header">Q. {{faq.question}}</span>
-            <template v-slot:actions>
-              <v-icon color="primary" class="icon">
-                $expand
-              </v-icon>
-            </template>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <div v-html="faq.answer.replace('\n', '<br />')" key="answer" class="content-container"></div>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </div>
-=======
     <v-expansion-panels focusable>
       <v-expansion-panel v-for="faq in faqs" :key="faq.question">
         <v-expansion-panel-header>
@@ -37,7 +18,6 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
->>>>>>> 2e06b701dc09b4004512b62a29a2ff8828ddcd64
   </Panel>
 </template>
 
@@ -46,14 +26,11 @@
 
 <script>
   import api from '@oj/api'
-<<<<<<< HEAD
   import _ from 'lodash'
   // lodash를 이용해서 orderBy를 사용하는 것이기 때문에 위에서 script를 반드시 해줘야함
   // _(언더바)가 정의되지 않는다는 오류 발생-> lodash사용을 명시적으로 하지 않았기 때문에 생기는 에러. import를 통해서 에러 해결 가능
-=======
   import { mdiMenuDown } from '@mdi/js'
 
->>>>>>> 2e06b701dc09b4004512b62a29a2ff8828ddcd64
   export default {
     name: 'FAQ',
     data () {
